@@ -11,6 +11,11 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "puppeteer": "^22.9.0"
+    "google-auth-library": "^9.10.0",
+    "google-spreadsheet": "^4.1.2",
+    "puppeteer": "^22.9.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "xlsx": "^0.18.5"
   }
 }

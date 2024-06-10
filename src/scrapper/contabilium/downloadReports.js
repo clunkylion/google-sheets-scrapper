@@ -30,7 +30,7 @@ const monitorDownloads = async (downloadPath, page, filename) => {
   console.log(`El archivo se descargó y renombró a ${filename}`);
 };
 
-const downloadReport = async (page, type, filename) => {
+const downloadReport = async (page, type, filename, downloadPath) => {
   await page.evaluate((type) => {
     const link = document.querySelector(
       `ul.dropdown-menu li a[href="javascript:exportar('${type}');"]`
@@ -82,7 +82,7 @@ const downloadReport = async (page, type, filename) => {
   }
 };
 
-const downloadStockReport = async (page, filename) => {
+const downloadStockReport = async (page, filename, downloadPath) => {
   try {
     await page.waitForSelector('#btnBuscar', { visible: true });
     await page.click('#btnBuscar');
@@ -98,6 +98,7 @@ const downloadStockReport = async (page, filename) => {
       message: 'Reporte de stock descargado correctamente',
     };
   } catch (error) {
+    console.error(error);
     console.log('Error al intentar descargar el reporte de stock.');
     return {
       success: false,
@@ -124,12 +125,14 @@ export const downloadReports = async (page, downloadPath) => {
   const simpleBilledReportResponse = await downloadReport(
     page,
     'S',
-    'simple_billed_report.xlsx'
+    'simple_billed_report.xlsx',
+    downloadPath
   );
   const detailedBilledReportReponse = await downloadReport(
     page,
     'D',
-    'detailed_billed_report.xlsx'
+    'detailed_billed_report.xlsx',
+    downloadPath
   );
 
   await waitForDownload(10000);
@@ -139,7 +142,8 @@ export const downloadReports = async (page, downloadPath) => {
 
   const stockReportResponse = await downloadStockReport(
     page,
-    'stock_report.xlsx'
+    'stock_report.xlsx',
+    downloadPath
   );
 
   await waitForDownload(10000);

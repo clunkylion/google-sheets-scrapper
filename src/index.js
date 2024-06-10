@@ -4,17 +4,15 @@ import contabiliumScrapper from './scrapper/contabilium/index.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const runScrapper = async () => {
+app.get('/contabilium-scrapper', async (req, res) => {
+  res.send('Scrapping process started');
   try {
-    await contabiliumScrapper();
+    const contabiliumScrapperResponse = await contabiliumScrapper();
+
+    console.log({ contabiliumScrapperResponse });
   } catch (error) {
     console.error(error);
   }
-};
-
-app.get('/contabilium-scrapper', async (req, res) => {
-  res.send('Scrapping process started');
-  await runScrapper();
 });
 
 app.listen(PORT, async () => {

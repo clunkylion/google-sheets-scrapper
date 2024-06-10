@@ -22,9 +22,7 @@ const contabiliumScrapper = async () => {
   try {
     await login(page);
 
-    const downloadReportsResponse = await downloadReports(page, downloadPath);
-
-    console.log(downloadReportsResponse);
+    return await downloadReports(page, downloadPath);
   } catch (error) {
     console.log(error);
   } finally {

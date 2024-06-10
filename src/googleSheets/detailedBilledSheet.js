@@ -3,6 +3,7 @@ import { JWT } from 'google-auth-library';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import path from 'path';
 import readXlsx from '../utils/readXlsx.js';
+import deleteFile from '../utils/deleteFile.js';
 
 const DOCUMENT_ID = process.env.DOCUMENT_ID;
 
@@ -47,27 +48,26 @@ export const uploadDetailledBilledReportToGoogleSheet = async () => {
       return !googleSheetsDataIds.has(row.ID);
     });
 
+    await deleteFile(filePath);
+
     if (validateDuplicatesValues && validateDuplicatesValues.length > 0) {
       await sheet.addRows(validateDuplicatesValues);
       return {
         success: true,
-        message: 'Detailled Billed report uploaded successfully',
+        message: 'Reporte Facturación Detallada actualizado correctamente',
       };
     }
 
     return {
       success: true,
-      message: 'Detailled Billed report already uploaded',
+      message:
+        'No hay nuevos datos para actualizar en el reporte de facturación detallada',
     };
   } catch (error) {
     console.log(error);
     return {
       success: false,
-      message: 'An error occurred while uploading the simple billed report',
+      message: 'Error al actualizar el reporte de facturación detallada',
     };
   }
 };
-
-(async () => {
-  console.log(await uploadDetailledBilledReportToGoogleSheet());
-})();

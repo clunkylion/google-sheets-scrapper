@@ -3,6 +3,7 @@ import { JWT } from 'google-auth-library';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import path from 'path';
 import readXlsx from '../utils/readXlsx.js';
+import deleteFile from '../utils/deleteFile.js';
 
 const serviceAccountAuth = new JWT({
   email: process.env.CLIENT_EMAIL,
@@ -25,19 +26,17 @@ export const uploadStockReportToGoogleSheet = async () => {
     await sheet.clearRows();
     await sheet.addRows(data);
 
+    await deleteFile(filePath);
+
     return {
       success: true,
-      message: 'Stock report uploaded successfully',
+      message: 'Reporte de stock actualizado correctamente',
     };
   } catch (error) {
     console.log(error);
     return {
       success: false,
-      message: 'An error occurred while uploading the stock report',
+      message: 'Error al actualizar el reporte de stock',
     };
   }
 };
-
-(async () => {
-  console.log(await uploadStockReportToGoogleSheet());
-})();

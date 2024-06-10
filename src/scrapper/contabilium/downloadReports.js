@@ -43,11 +43,13 @@ const downloadReport = async (page, type, filename, downloadPath) => {
   try {
     await page.waitForSelector('#divError', { timeout: 5000 });
     console.log(
-      `No hay datos para el reporte ${type === 'S' ? 'simple' : 'detallado'}.`
+      `No hay datos para el reporte de facturación ${
+        type === 'S' ? 'simple' : 'detallado'
+      }.`
     );
     return {
       success: false,
-      message: `No hay datos para el reporte ${
+      message: `No hay datos para el reporte de facturación ${
         type === 'S' ? 'simple' : 'detallado'
       }`,
     };
@@ -62,19 +64,19 @@ const downloadReport = async (page, type, filename, downloadPath) => {
       await monitorDownloads(downloadPath, page, filename);
       return {
         success: true,
-        message: `Reporte ${
+        message: `Reporte de facturación ${
           type === 'S' ? 'simple' : 'detallado'
         } descargado correctamente`,
       };
     } catch (downloadError) {
       console.log(
-        `Error al intentar descargar el reporte ${
+        `Error al intentar descargar el reporte de facturación${
           type === 'S' ? 'simple' : 'detallado'
         }.`
       );
       return {
         success: false,
-        message: `Error al intentar descargar el reporte ${
+        message: `Error al intentar descargar el reporte de facturación${
           type === 'S' ? 'simple' : 'detallado'
         }`,
       };

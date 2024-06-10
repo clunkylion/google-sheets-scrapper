@@ -11,9 +11,12 @@ const contabiliumScrapper = async () => {
   const downloadPath = './src/downloads';
 
   const browser = await puppeteer.launch({
-    headless: false,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    defaultViewport: null,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--single-process',
+      '--no-zygote',
+    ],
   });
   const page = await browser.newPage();
 

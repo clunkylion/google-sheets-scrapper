@@ -45,6 +45,14 @@ const downloadReport = async (page, type, filename) => {
     console.log(
       `No hay datos para el reporte ${type === 'S' ? 'simple' : 'detallado'}.`
     );
+    return {
+      success: false,
+      message: `No hay datos para el reporte ${
+        type === 'S' ? 'simple' : 'detallado'
+      }`,
+    };
+    //execute cath because div error is not present and thans
+    // means that the download is ready
   } catch (error) {
     try {
       await page.waitForSelector('#lnkDownload', {
@@ -52,13 +60,49 @@ const downloadReport = async (page, type, filename) => {
         timeout: 5000,
       });
       await monitorDownloads(downloadPath, page, filename);
+      return {
+        success: true,
+        message: `Reporte ${
+          type === 'S' ? 'simple' : 'detallado'
+        } descargado correctamente`,
+      };
     } catch (downloadError) {
       console.log(
         `Error al intentar descargar el reporte ${
           type === 'S' ? 'simple' : 'detallado'
         }.`
       );
+      return {
+        success: false,
+        message: `Error al intentar descargar el reporte ${
+          type === 'S' ? 'simple' : 'detallado'
+        }`,
+      };
     }
+  }
+};
+
+const downloadStockReport = async (page, filename) => {
+  try {
+    await page.waitForSelector('#btnBuscar', { visible: true });
+    await page.click('#btnBuscar');
+
+    await page.waitForSelector('#divIconoDescargar', { visible: true });
+    await page.click('#divIconoDescargar');
+
+    await page.waitForSelector('#lnkDownload', { visible: true });
+    await monitorDownloads(downloadPath, page, filename);
+
+    return {
+      success: true,
+      message: 'Reporte de stock descargado correctamente',
+    };
+  } catch (error) {
+    console.log('Error al intentar descargar el reporte de stock.');
+    return {
+      success: false,
+      message: 'Error al intentar descargar el reporte de stock',
+    };
   }
 };
 
@@ -76,22 +120,33 @@ export const downloadReports = async (page, downloadPath) => {
   });
 
   await page.waitForSelector('.dropdown-menu');
-
-  await downloadReport(page, 'S', 'simple_billed_report.xlsx');
-  await downloadReport(page, 'D', 'detailed_billed_report.xlsx');
+  //download simplre and detailed billed report
+  const simpleBilledReportResponse = await downloadReport(
+    page,
+    'S',
+    'simple_billed_report.xlsx'
+  );
+  const detailedBilledReportReponse = await downloadReport(
+    page,
+    'D',
+    'detailed_billed_report.xlsx'
+  );
 
   await waitForDownload(10000);
 
   // Stock report
   await page.goto(`${process.env.CONTABILIUM_URL}/modulos/reportes/stock.aspx`);
-  await page.waitForSelector('#btnBuscar', { visible: true });
-  await page.click('#btnBuscar');
 
-  await page.waitForSelector('#divIconoDescargar', { visible: true });
-  await page.click('#divIconoDescargar');
-
-  await page.waitForSelector('#lnkDownload', { visible: true });
-  await monitorDownloads(downloadPath, page, 'stock_report.xlsx');
+  const stockReportResponse = await downloadStockReport(
+    page,
+    'stock_report.xlsx'
+  );
 
   await waitForDownload(10000);
+
+  return {
+    simpleBilledReportResponse,
+    detailedBilledReportReponse,
+    stockReportResponse,
+  };
 };

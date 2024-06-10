@@ -37,3 +37,7 @@ export const uploadStockReportToGoogleSheet = async () => {
     };
   }
 };
+
+(async () => {
+  console.log(await uploadStockReportToGoogleSheet());
+})();

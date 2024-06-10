@@ -67,3 +67,7 @@ export const uploadSimpleBilledReportToGoogleSheet = async () => {
     };
   }
 };
+
+(async () => {
+  console.log(await uploadSimpleBilledReportToGoogleSheet());
+})();

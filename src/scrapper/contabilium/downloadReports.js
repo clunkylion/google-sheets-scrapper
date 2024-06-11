@@ -42,21 +42,24 @@ const downloadReport = async (page, type, filename, downloadPath) => {
 
   try {
     await page.waitForSelector('#divError', { timeout: 5000 });
-    console.log(
-      `No hay datos para el reporte de facturación ${
-        type === 'S' ? 'simple' : 'detallado'
-      }.`
-    );
-    return {
-      success: false,
-      message: `No hay datos para el reporte de facturación ${
-        type === 'S' ? 'simple' : 'detallado'
-      }`,
-    };
-    //execute cath because div error is not present and thans
-    // means that the download is ready
-  } catch (error) {
-    try {
+    const isDivErrorVisible = await page.evaluate(() => {
+      const divError = document.querySelector('#divError');
+      return divError && window.getComputedStyle(divError).display === 'block';
+    });
+
+    if (isDivErrorVisible) {
+      console.log(
+        `No hay datos para el reporte de facturación ${
+          type === 'S' ? 'simple' : 'detallado'
+        }.`
+      );
+      return {
+        success: false,
+        message: `No hay datos para el reporte de facturación ${
+          type === 'S' ? 'simple' : 'detallado'
+        }`,
+      };
+    } else {
       await page.waitForSelector('#lnkDownload', {
         visible: true,
         timeout: 5000,
@@ -68,19 +71,19 @@ const downloadReport = async (page, type, filename, downloadPath) => {
           type === 'S' ? 'simple' : 'detallado'
         } descargado correctamente`,
       };
-    } catch (downloadError) {
-      console.log(
-        `Error al intentar descargar el reporte de facturación${
-          type === 'S' ? 'simple' : 'detallado'
-        }.`
-      );
-      return {
-        success: false,
-        message: `Error al intentar descargar el reporte de facturación${
-          type === 'S' ? 'simple' : 'detallado'
-        }`,
-      };
     }
+  } catch (downloadError) {
+    console.log(
+      `Error al intentar descargar el reporte de facturación${
+        type === 'S' ? 'simple' : 'detallado'
+      }.`
+    );
+    return {
+      success: false,
+      message: `Error al intentar descargar el reporte de facturación${
+        type === 'S' ? 'simple' : 'detallado'
+      }`,
+    };
   }
 };
 
@@ -137,7 +140,7 @@ export const downloadReports = async (page, downloadPath) => {
     downloadPath
   );
 
-  await waitForDownload(10000);
+  //await waitForDownload(10000);
 
   // Stock report
   await page.goto(`${process.env.CONTABILIUM_URL}/modulos/reportes/stock.aspx`);
@@ -148,7 +151,7 @@ export const downloadReports = async (page, downloadPath) => {
     downloadPath
   );
 
-  await waitForDownload(10000);
+  //await waitForDownload(10000);
 
   return {
     simpleBilledReportResponse,

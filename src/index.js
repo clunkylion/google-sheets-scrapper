@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import { uploadDetailledBilledReportToGoogleSheet } from './googleSheets/detailedBilledSheet.js';
 import { uploadSimpleBilledReportToGoogleSheet } from './googleSheets/simpleBilledSheet.js';
@@ -7,9 +8,10 @@ import { sendMail } from './utils/mailer.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const EMAIL_RECIPIENTS = JSON.parse(process.env.EMAIL_RECIPIENTS);
 
 app.get('/contabilium-scrapper', async (req, res) => {
-  res.send('Scrapping process started');
+  console.log('Scrapping process started');
   try {
     const contabiliumScrapperResponse = await contabiliumScrapper();
 
@@ -28,6 +30,23 @@ app.get('/contabilium-scrapper', async (req, res) => {
       },
     };
 
+    if (!contabiliumScrapperResponse) {
+      console.log('no response from contabilium scrapper');
+
+      await sendMail(
+        ['cote99salamanca@gmail.com'],
+        'ERROR SCRAPPER CONTABILIUM - MOTOR OIL',
+        `
+          ERROR scrapper contabilium - Motor Oil ${new Date().toLocaleDateString()}
+  
+          ERROR:
+           No se pudo obtener respuesta del scrapper de contabilium
+           Volver a intentar el proceso.
+        `
+      );
+      return res.send('no response from contabilium scrapper');
+    }
+
     if (contabiliumScrapperResponse.stockReportResponse.success) {
       console.log('procesing Stock report  to google drive');
       const gdriveResponse = await uploadStockReportToGoogleSheet();
@@ -43,8 +62,11 @@ app.get('/contabilium-scrapper', async (req, res) => {
       const gdriveResponse = await uploadDetailledBilledReportToGoogleSheet();
       responseEmailData.detailedBilledReport.message = gdriveResponse.message;
     }
+
+    console.log({ googleSheetUpdateStatus: responseEmailData });
+
     await sendMail(
-      'martinrioja@gmail.com',
+      EMAIL_RECIPIENTS,
       'RESULTADO SCRAPPER CONTABILIUM - MOTOR OIL',
       `
         Resultado scrapper contabilium - Motor Oil ${new Date().toLocaleDateString()}
@@ -60,8 +82,22 @@ app.get('/contabilium-scrapper', async (req, res) => {
         pd: martin estoy haciendo pruebas.
       `
     );
+    return res.send({
+      contabiliumScrapperResponse,
+    });
   } catch (error) {
-    console.error(error);
+    console.error({ error });
+    await sendMail(
+      EMAIL_RECIPIENTS,
+      'ERROR SCRAPPER CONTABILIUM - MOTOR OIL',
+      `
+        ERROR scrapper contabilium - Motor Oil ${new Date().toLocaleDateString()}
+
+        ERROR:
+         ${error}
+          Volver a intentar el proceso.
+      `
+    );
   }
 });
 

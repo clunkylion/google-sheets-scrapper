@@ -20,7 +20,7 @@ transporter.verify(function (error, success) {
 export const sendMail = async (to, subject, text) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
-    to: to,
+    to: Array.isArray(to) ? to.join(', ') : to,
     subject: subject,
     text: text,
   };

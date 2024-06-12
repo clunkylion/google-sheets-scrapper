@@ -19,5 +19,8 @@
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "xlsx": "^0.18.5"
+  },
+  "pkg": {
+    "assets": "node_modules/puppeteer-extra-plugin-stealth/**/*.*"
   }
 }

@@ -41,7 +41,7 @@ const downloadReport = async (page, type, filename, downloadPath) => {
   }, type);
 
   try {
-    await page.waitForSelector('#divError', { timeout: 5000 });
+    await page.waitForSelector('#divError');
     const isDivErrorVisible = await page.evaluate(() => {
       const divError = document.querySelector('#divError');
       return divError && window.getComputedStyle(divError).display === 'block';
@@ -62,7 +62,6 @@ const downloadReport = async (page, type, filename, downloadPath) => {
     } else {
       await page.waitForSelector('#lnkDownload', {
         visible: true,
-        timeout: 5000,
       });
       await monitorDownloads(downloadPath, page, filename);
       return {

@@ -21,6 +21,7 @@ const contabiliumScrapper = async () => {
       '--single-process',
       '--no-zygote',
     ],
+    timeout: 0,
   });
   const page = await browser.newPage();
 

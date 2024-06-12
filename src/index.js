@@ -1,20 +1,14 @@
 import 'dotenv/config';
-import express from 'express';
 import { uploadDetailledBilledReportToGoogleSheet } from './googleSheets/detailedBilledSheet.js';
 import { uploadSimpleBilledReportToGoogleSheet } from './googleSheets/simpleBilledSheet.js';
 import { uploadStockReportToGoogleSheet } from './googleSheets/stockSheet.js';
 import contabiliumScrapper from './scrapper/contabilium/index.js';
 import { sendMail } from './utils/mailer.js';
 
-const app = express();
 const PORT = process.env.PORT || 3000;
 const EMAIL_RECIPIENTS = JSON.parse(process.env.EMAIL_RECIPIENTS);
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
-app.get('/contabilium-scrapper', async (req, res) => {
+async function scrapper() {
   console.log('Scrapping process started');
   try {
     const contabiliumScrapperResponse = await contabiliumScrapper();
@@ -86,9 +80,9 @@ app.get('/contabilium-scrapper', async (req, res) => {
         pd: martin estoy haciendo pruebas.
       `
     );
-    return res.send({
+    return {
       contabiliumScrapperResponse,
-    });
+    };
   } catch (error) {
     console.error({ error });
     await sendMail(
@@ -103,8 +97,14 @@ app.get('/contabilium-scrapper', async (req, res) => {
       `
     );
   }
-});
+}
 
-app.listen(PORT, async () => {
-  console.log(`Server running on port ${PORT}`);
-});
+exports.handler = async (event, context) => {
+  try {
+    const response = await scrapper();
+    return response;
+  } catch (error) {
+    console.error('Error in handler', error);
+    return error;
+  }
+};

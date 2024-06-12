@@ -8,7 +8,12 @@ import { sendMail } from './utils/mailer.js';
 
 const app = express();
 const PORT = 8080;
-const EMAIL_RECIPIENTS = ['cote99salamanca@gmail.com', 'martinrioja@gmail.com'];
+const EMAIL_RECIPIENTS = [
+  'cote99salamanca@gmail.com',
+  'martinrioja@gmail.com',
+  'ventas@motoroilchile.cl',
+  'pablo.a.rioja@gmail.com',
+];
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -86,7 +91,7 @@ app.get('/contabilium-scrapper', async (req, res) => {
       `
     );
     return res.send({
-      contabiliumScrapperResponse,
+      responseEmailData,
     });
   } catch (error) {
     console.error({ error });
@@ -101,6 +106,11 @@ app.get('/contabilium-scrapper', async (req, res) => {
           Volver a intentar el proceso.
       `
     );
+    res
+      .send({
+        error,
+      })
+      .status(500);
   }
 });
 

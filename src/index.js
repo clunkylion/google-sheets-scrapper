@@ -7,7 +7,7 @@ import contabiliumScrapper from './scrapper/contabilium/index.js';
 import { sendMail } from './utils/mailer.js';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 const EMAIL_RECIPIENTS = JSON.parse(process.env.EMAIL_RECIPIENTS);
 
 app.get('/', (req, res) => {

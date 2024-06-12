@@ -8,7 +8,7 @@ import { sendMail } from './utils/mailer.js';
 
 const app = express();
 const PORT = 8080;
-const EMAIL_RECIPIENTS = JSON.parse(process.env.EMAIL_RECIPIENTS);
+const EMAIL_RECIPIENTS = ['cote99salamanca@gmail.com', 'martinrioja@gmail.com'];
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -83,7 +83,6 @@ app.get('/contabilium-scrapper', async (req, res) => {
         }
 
         Saludos cordiales
-        pd: martin estoy haciendo pruebas.
       `
     );
     return res.send({

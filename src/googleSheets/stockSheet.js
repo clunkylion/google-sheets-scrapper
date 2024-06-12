@@ -5,9 +5,15 @@ import path from 'path';
 import readXlsx from '../utils/readXlsx.js';
 import deleteFile from '../utils/deleteFile.js';
 
+const credential = JSON.parse(
+  Buffer.from(process.env.GOOGLE_CREDENTIALS, 'base64')
+    .toString()
+    .replace(/\n/g, '')
+);
+
 const serviceAccountAuth = new JWT({
-  email: process.env.CLIENT_EMAIL,
-  key: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
+  email: credential.client_email,
+  key: credential.private_key,
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 

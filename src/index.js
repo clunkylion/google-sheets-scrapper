@@ -21,19 +21,6 @@ app.get('/contabilium-scrapper', async (req, res) => {
 
     console.log({ contabiliumScrapperResponse });
 
-    const responseEmailData = {
-      stockReport: {
-        message: contabiliumScrapperResponse.stockReportResponse.message,
-      },
-      simpleBilledReport: {
-        message: contabiliumScrapperResponse.simpleBilledReportResponse.message,
-      },
-      detailedBilledReport: {
-        message:
-          contabiliumScrapperResponse.detailedBilledReportReponse.message,
-      },
-    };
-
     if (!contabiliumScrapperResponse) {
       console.log('no response from contabilium scrapper');
 
@@ -50,6 +37,19 @@ app.get('/contabilium-scrapper', async (req, res) => {
       );
       return res.send('no response from contabilium scrapper');
     }
+
+    const responseEmailData = {
+      stockReport: {
+        message: contabiliumScrapperResponse.stockReportResponse.message,
+      },
+      simpleBilledReport: {
+        message: contabiliumScrapperResponse.simpleBilledReportResponse.message,
+      },
+      detailedBilledReport: {
+        message:
+          contabiliumScrapperResponse.detailedBilledReportReponse.message,
+      },
+    };
 
     if (contabiliumScrapperResponse.stockReportResponse.success) {
       console.log('procesing Stock report  to google drive');

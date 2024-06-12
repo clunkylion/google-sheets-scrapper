@@ -11,5 +11,11 @@
             "src": "/(.*)",
             "dest": "/src/index.js"
         }
-    ]
+    ],
+    "build": {
+        "env": {
+            "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin:/opt/sbin:/opt/lib"
+        },
+        "postInstall": "./install.sh"
+    }
 }

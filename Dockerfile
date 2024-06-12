@@ -23,11 +23,17 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     UNIVERSE_DOMAIN=googleapis.com \
     NODE_ENV=PRODUCTION
 
+
+EXPOSE 8080    
+
 WORKDIR /usr/src/app
+
 
 COPY package*.json ./
 RUN npm ci
 COPY . . 
+
+
 
 RUN ls -la /usr/src/app
 CMD [ "node", "src/index.js" ]

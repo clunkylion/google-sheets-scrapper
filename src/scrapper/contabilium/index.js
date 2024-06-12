@@ -11,6 +11,10 @@ const contabiliumScrapper = async () => {
   const downloadPath = './src/downloads';
 
   const browser = await puppeteer.launch({
+    executablePath:
+      process.env.NODE_ENV === 'PRODUCTION'
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',

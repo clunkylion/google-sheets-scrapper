@@ -9,7 +9,6 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     EMAIL_PASSWORD="syup eaqu ggpw viyv" \
     TEST_DOCUMENT_ID=1Rn2HBMAlw4C3gGW-5PSn1xdUAr1gYqeC61sFWyuvtqw \
     DOCUMENT_ID=1_IwJEODeSZnu3_ZrZsw6moZBOaAhgwRb92eec5cRh3A \
-    PORT=8080 \
     EMAIL_RECIPIENTS=["cote99salamanca@gmail.com"] \
     TYPE=service_account \
     PROJECT_ID=global-ace-420114 \

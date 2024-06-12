@@ -1,11 +1,11 @@
 import 'dotenv/config';
-import puppeteer from 'puppeteer';
-//import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import puppeteer from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { setupPuppeteer } from './puppeteerConfig.js';
 import { login } from './auth.js';
 import { downloadReports } from './downloadReports.js';
 
-//puppeteer.use(StealthPlugin());
+puppeteer.use(StealthPlugin());
 
 const contabiliumScrapper = async () => {
   const downloadPath = './src/downloads';

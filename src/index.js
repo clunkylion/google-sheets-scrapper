@@ -10,6 +10,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const EMAIL_RECIPIENTS = JSON.parse(process.env.EMAIL_RECIPIENTS);
 
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
 app.get('/contabilium-scrapper', async (req, res) => {
   console.log('Scrapping process started');
   try {

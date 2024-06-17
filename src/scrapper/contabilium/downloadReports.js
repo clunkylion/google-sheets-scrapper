@@ -6,46 +6,61 @@ const waitForDownload = (timeout) => {
 };
 
 const monitorDownloads = async (downloadPath, page, filename) => {
-  const filesBefore = new Set(fs.readdirSync(downloadPath));
+  try {
+    const filesBefore = new Set(fs.readdirSync(downloadPath));
 
-  await page.evaluate(() => {
-    document.querySelector('#lnkDownload').click();
-  });
+    await page.evaluate(() => {
+      document.querySelector('#lnkDownload').click();
+    });
 
-  let newFile = null;
-  while (!newFile) {
-    const filesAfter = new Set(fs.readdirSync(downloadPath));
-    const difference = [...filesAfter].filter((x) => !filesBefore.has(x));
-    if (difference.length > 0) {
-      newFile = difference[0];
-    } else {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+    let newFile = null;
+    while (!newFile) {
+      const filesAfter = new Set(fs.readdirSync(downloadPath));
+      const difference = [...filesAfter].filter((x) => !filesBefore.has(x));
+      if (difference.length > 0) {
+        newFile = difference[0];
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
     }
+
+    const oldPath = path.join(downloadPath, newFile);
+
+    let fileStillDownloading = true;
+    while (fileStillDownloading) {
+      const oldSize = fs.statSync(oldPath).size;
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const newSize = fs.statSync(oldPath).size;
+      if (oldSize === newSize) {
+        fileStillDownloading = false;
+      }
+    }
+
+    const newPath = path.join(downloadPath, filename);
+    fs.renameSync(oldPath, newPath);
+
+    console.log(`El archivo se descargó y renombró a ${filename}`);
+  } catch (error) {
+    console.error('Error durante la descarga y renombrado del archivo:', error);
   }
-
-  const oldPath = path.join(downloadPath, newFile);
-  const newPath = path.join(downloadPath, filename);
-  fs.renameSync(oldPath, newPath);
-
-  console.log(`El archivo se descargó y renombró a ${filename}`);
 };
 
 const downloadReport = async (page, type, filename, downloadPath) => {
-  await page.evaluate((type) => {
-    const link = document.querySelector(
-      `ul.dropdown-menu li a[href="javascript:exportar('${type}');"]`
-    );
-    if (link) {
-      link.click();
-    }
-  }, type);
-
   try {
-    await page.waitForSelector('#divError');
-    const isDivErrorVisible = await page.evaluate(() => {
+    await page.evaluate(async (type) => {
+      const link = document.querySelector(
+        `ul.dropdown-menu li a[href="javascript:exportar('${type}');"]`
+      );
+      if (link) {
+        link.click();
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+    }, type);
+
+    const isDivErrorVisible = await page.evaluate((type) => {
       const divError = document.querySelector('#divError');
       return divError && window.getComputedStyle(divError).display === 'block';
-    });
+    }, type);
 
     if (isDivErrorVisible) {
       console.log(
@@ -77,6 +92,7 @@ const downloadReport = async (page, type, filename, downloadPath) => {
         type === 'S' ? 'simple' : 'detallado'
       }.`
     );
+    console.log(downloadError);
     return {
       success: false,
       message: `Error al intentar descargar el reporte de facturación${
